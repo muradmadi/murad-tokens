@@ -81,6 +81,19 @@ at 24px or above.
 
 Check both themes before finishing, not just the one you are developing in.
 
+## Adding a utility
+
+Declare it with `@utility name { … }`, never inside `@layer utilities`. In Tailwind v4
+only `@utility` registers a class with the variant system — a class in `@layer utilities`
+works bare but `md:`, `hover:` and `dark:` prefixes on it silently generate nothing.
+
+Nest reduced-motion guards inside the utility body so they survive variant composition,
+and keep `!important` on them — without it a later same-specificity utility (e.g.
+`duration-700`) defeats the guard.
+
+Note: `delay-100`…`delay-400` collide with Tailwind core's `delay-*` (transition-delay).
+Both apply, targeting different properties. Harmless, but expect both.
+
 ## Adding a token
 
 1. Identity (colour, radius, shadow, motion constant) → `core.css`.

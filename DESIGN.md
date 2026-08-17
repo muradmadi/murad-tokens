@@ -202,6 +202,44 @@ white-label exception, not as customisation.
 
 ---
 
+## Utilities and variants
+
+Every custom utility in this package is declared with `@utility`, not inside
+`@layer utilities`. This matters more than it looks.
+
+In Tailwind v4, **only `@utility` registers a class with the variant system.** A class
+defined in `@layer utilities` exists and works on its own, but `md:`, `hover:`, and
+`dark:` prefixes on it silently generate nothing — no error, no warning, just a class
+that does not exist. `md:text-lead` was dead in the source portfolio for exactly this
+reason.
+
+Two consequences worth knowing:
+
+**Variants work.** `md:text-lead`, `hover:glass-effect`, `lg:content-breakout` all
+generate. Reduced-motion guards are nested inside each utility so they survive variant
+composition — `md:animate-marquee` still respects the guard.
+
+**Unused utilities are tree-shaken.** `@utility` only emits a class if something
+references it. Importing this package does not ship `text-mega` unless you use it. The
+source portfolio shipped seven unused utility rules; the packaged version drops them.
+
+### The `delay-*` collision
+
+`delay-100` … `delay-400` collide by name with Tailwind core's `delay-*`, which sets
+`transition-delay`. Both rules apply: core sets `transition-delay`, this package sets
+`animation-delay`. They target different properties, so nothing breaks — but an element
+with `delay-200` carries both. The names are kept because renaming would break existing
+markup; just be aware of it when a transition delay appears you did not ask for.
+
+### `!important` on reduced-motion guards
+
+Every reduced-motion override carries `!important`, deliberately. Without it, a
+same-specificity Tailwind utility declared later in the cascade wins — `smooth-transition
+duration-700` under `prefers-reduced-motion` would keep its 700ms transition. An
+accessibility guard that a utility class can silently defeat is not a guard.
+
+---
+
 ## Extending the system
 
 Adding a token is a design decision, so it has a procedure:

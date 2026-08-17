@@ -240,101 +240,99 @@
   }
 }
 
-@layer utilities {
-  /**
-   * @group Display Type
-   * @rationale clamp() scales fluidly without media-query stepping. The tight
-   *            leading works at display size and nowhere else.
-   * @constraint Never apply to body text or interactive elements.
-   */
-  .text-display {
-    font-family: var(--font-serif);
-    font-size: clamp(3rem, 8vw, 6rem);
-    line-height: 1.4;
-    letter-spacing: -0.04em;
-    font-weight: 500;
-  }
+/**
+ * @group Display Type
+ * @rationale clamp() scales fluidly without media-query stepping. The tight
+ *            leading works at display size and nowhere else.
+ * @constraint Never apply to body text or interactive elements.
+ */
+@utility text-display {
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 1.4;
+  letter-spacing: -0.04em;
+  font-weight: 500;
+}
 
-  .text-display-sm {
-    font-family: var(--font-serif);
-    font-size: clamp(2rem, 5vw, 3rem);
-    line-height: 1.4;
-    letter-spacing: -0.03em;
-    font-weight: 500;
-  }
+@utility text-display-sm {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.4;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+}
 
-  .text-mega {
-    font-family: var(--font-serif);
-    font-size: 10vw;
-    line-height: 0.8;
-    letter-spacing: -0.05em;
-    color: var(--color-ink);
-  }
+@utility text-mega {
+  font-family: var(--font-serif);
+  font-size: 10vw;
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  color: var(--color-ink);
+}
 
-  /**
-   * @group Heading Scale (non-prose)
-   * @description Mirrors the prose scale as utilities for composed layouts.
-   */
-  .text-headline {
-    font-family: var(--font-serif);
-    font-size: 2.5rem;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    font-weight: 500;
-  }
+/**
+ * @group Heading Scale (non-prose)
+ * @description Mirrors the prose scale as utilities for composed layouts.
+ */
+@utility text-headline {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
 
-  .text-subhead {
-    font-family: var(--font-serif);
-    font-size: 1.5rem;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    font-weight: 500;
-  }
+@utility text-subhead {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
 
-  .text-lead {
-    font-family: var(--font-sans);
-    font-size: 1.25rem;
-    line-height: 1.6;
-  }
+@utility text-lead {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  line-height: 1.6;
+}
 
-  .text-body {
-    font-family: var(--font-sans);
-    font-size: 1rem;
-    line-height: 1.75;
-  }
+@utility text-body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.75;
+}
 
-  /**
-   * @group Breakout
-   * @description Escapes the reading measure for emphasis without abandoning it.
-   * @rationale Mixed widths create hierarchy — a wide element reads as "important"
-   *            purely through geometry.
-   * @usage
-   *   .content-breakout — the default rule; honours --breakout-w set per layout
-   *   .breakout-md      — fixed 52rem, stays centred
-   *   .breakout-wide    — 85ch, full-bleed math
-   *   .breakout-full    — true edge-to-edge, cinematic media only
-   * @constraint Always pair full-bleed with responsive padding so text never
-   *             touches the viewport edge.
-   */
-  .content-breakout {
-    width: min(92vw, var(--breakout-w, var(--measure-reading)));
-    margin-inline: calc(50% - min(92vw, var(--breakout-w, var(--measure-reading))) / 2);
-  }
+/**
+ * @group Breakout
+ * @description Escapes the reading measure for emphasis without abandoning it.
+ * @rationale Mixed widths create hierarchy — a wide element reads as "important"
+ *            purely through geometry.
+ * @usage
+ *   .content-breakout — the default rule; honours --breakout-w set per layout
+ *   .breakout-md      — fixed 52rem, stays centred
+ *   .breakout-wide    — 85ch, full-bleed math
+ *   .breakout-full    — true edge-to-edge, cinematic media only
+ * @constraint Always pair full-bleed with responsive padding so text never
+ *             touches the viewport edge.
+ */
+@utility content-breakout {
+  width: min(92vw, var(--breakout-w, var(--measure-reading)));
+  margin-inline: calc(50% - min(92vw, var(--breakout-w, var(--measure-reading))) / 2);
+}
 
-  .breakout-md {
-    width: min(92vw, 52rem);
-    margin-inline: calc(50% - min(92vw, 52rem) / 2);
-  }
+@utility breakout-md {
+  width: min(92vw, 52rem);
+  margin-inline: calc(50% - min(92vw, 52rem) / 2);
+}
 
-  .breakout-wide {
-    width: 100vw;
-    max-width: var(--measure-wide);
-    margin-inline: calc(50% - 50vw);
-  }
+@utility breakout-wide {
+  width: 100vw;
+  max-width: var(--measure-wide);
+  margin-inline: calc(50% - 50vw);
+}
 
-  .breakout-full {
-    width: 100vw;
-    max-width: 100vw;
-    margin-inline: calc(50% - 50vw);
-  }
+@utility breakout-full {
+  width: 100vw;
+  max-width: 100vw;
+  margin-inline: calc(50% - 50vw);
 }

@@ -45,113 +45,172 @@
   }
 }
 
-@layer utilities {
-  /**
-   * @group Smooth Transition
-   * @description Paint-only transition set for interactive elements.
-   * @rationale Transitioning `all` forces layout recalculation. Enumerating
-   *            compositor-safe properties keeps interactions at 60fps.
-   * @constraint Never transition width, height, top, or left.
-   */
-  .smooth-transition {
-    transition-property:
-      color, background-color, border-color, text-decoration-color, fill, stroke, opacity,
-      box-shadow, transform, filter, backdrop-filter;
-    transition-timing-function: var(--ease-editorial);
-    transition-duration: var(--duration-interaction);
-  }
+/* ===================================================================
+   UTILITIES
+   @rationale Declared with @utility rather than inside @layer utilities.
+              In Tailwind v4 only @utility registers a class with the variant
+              system — a class defined in @layer utilities exists, but `md:`,
+              `hover:` and `dark:` prefixes on it silently generate nothing.
+              Reduced-motion guards are nested inside each utility so they
+              survive variant composition (md:animate-marquee still respects it).
+   =================================================================== */
+
+/**
+ * @group Smooth Transition
+ * @description Paint-only transition set for interactive elements.
+ * @rationale Transitioning `all` forces layout recalculation. Enumerating
+ *            compositor-safe properties keeps interactions at 60fps.
+ * @constraint Never transition width, height, top, or left.
+ */
+@utility smooth-transition {
+  transition-property:
+    color, background-color, border-color, text-decoration-color, fill, stroke, opacity,
+    box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: var(--ease-editorial);
+  transition-duration: var(--duration-interaction);
 
   @media (prefers-reduced-motion: reduce) {
-    .smooth-transition {
-      transition-duration: 0ms !important;
-    }
+    transition-duration: 0ms !important;
   }
+}
 
-  /**
-   * @group Scrollbar Suppression
-   * @usage Horizontal galleries and carousels where a visible bar is noise.
-   * @constraint Only for one-dimensional scroll regions. Never on a page's main
-   *             vertical scroll — that strips a wayfinding affordance.
-   */
-  .scrollbar-hide {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
+/**
+ * @group Scrollbar Suppression
+ * @usage Horizontal galleries and carousels where a visible bar is noise.
+ * @constraint Only for one-dimensional scroll regions. Never on a page's main
+ *             vertical scroll — that strips a wayfinding affordance.
+ */
+@utility scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 
-  .scrollbar-hide::-webkit-scrollbar {
+  &::-webkit-scrollbar {
     display: none;
   }
+}
 
-  /**
-   * @group Entrance Animation
-   * @description Staggered fade-in-up for orchestrated reveals.
-   * @usage .fade-in-up on the element, .delay-{100..400} to stagger siblings.
-   * @constraint Reveal content on entry only. Never gate meaningful content behind
-   *             a scroll-triggered animation that reduced-motion users won't fire.
-   */
-  .fade-in-up {
-    opacity: 0;
-    transform: translateY(30px);
-    animation: murad-fade-in-up 1s var(--ease-entrance) forwards;
-  }
-
-  .delay-100 {
-    animation-delay: 0.1s;
-  }
-
-  .delay-200 {
-    animation-delay: 0.2s;
-  }
-
-  .delay-300 {
-    animation-delay: 0.35s;
-  }
-
-  .delay-400 {
-    animation-delay: 0.5s;
-  }
-
-  @keyframes murad-fade-in-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+/**
+ * @group Entrance Animation
+ * @description Staggered fade-in-up for orchestrated reveals.
+ * @usage .fade-in-up on the element, .delay-{100..400} to stagger siblings.
+ * @constraint Reveal content on entry only. Never gate meaningful content behind
+ *             a scroll-triggered animation that reduced-motion users won't fire.
+ */
+@utility fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: murad-fade-in-up 1s var(--ease-entrance) forwards;
 
   @media (prefers-reduced-motion: reduce) {
-    .fade-in-up,
-    .delay-100,
-    .delay-200,
-    .delay-300,
-    .delay-400 {
-      animation: none !important;
-      opacity: 1;
-      transform: none;
-    }
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
   }
+}
 
-  /**
-   * @group Marquee
-   * @description Infinite horizontal drift for logo and tool strips.
-   * @rationale CSS animation outperforms rAF loops for continuous linear motion.
-   * @usage Duplicate the track content and animate to -50% for a seamless loop.
-   */
-  .animate-marquee {
-    animation: murad-marquee 60s linear infinite;
-  }
-
-  @keyframes murad-marquee {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
-    }
-  }
+/**
+ * @group Stagger Delays
+ * @description Animation offsets for orchestrated sibling reveals.
+ * @warning Name collision with Tailwind core's `delay-*`, which sets
+ *          transition-delay. Both rules apply — core sets transition-delay,
+ *          this sets animation-delay. Harmless because they target different
+ *          properties, but be aware that `delay-200` carries both.
+ */
+@utility delay-100 {
+  animation-delay: 0.1s;
 
   @media (prefers-reduced-motion: reduce) {
-    .animate-marquee {
-      animation: none !important;
-    }
+    animation-delay: 0s !important;
+  }
+}
+
+@utility delay-200 {
+  animation-delay: 0.2s;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation-delay: 0s !important;
+  }
+}
+
+@utility delay-300 {
+  animation-delay: 0.35s;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation-delay: 0s !important;
+  }
+}
+
+@utility delay-400 {
+  animation-delay: 0.5s;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation-delay: 0s !important;
+  }
+}
+
+/**
+ * @group Marquee
+ * @description Infinite horizontal drift for logo and tool strips.
+ * @rationale CSS animation outperforms rAF loops for continuous linear motion.
+ * @usage Duplicate the track content and animate to -50% for a seamless loop.
+ */
+@utility animate-marquee {
+  animation: murad-marquee 60s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none !important;
+  }
+}
+
+/**
+ * @group Ambient Pulse
+ * @description Slow organic drift and scale for atmospheric light emitters.
+ * @rationale Gradient meshes read as static and artificial when they hold still.
+ *            A 12s cycle is slow enough to register as ambience rather than
+ *            animation — the eye should never catch it looping.
+ * @usage Apply to blurred radial shapes behind hero content. Offset siblings
+ *        with an inline negative [animation-delay:-6s] so they breathe out of phase.
+ * @constraint Decorative only. Never attach meaning to the pulse — it is switched
+ *             off entirely under reduced-motion.
+ */
+@utility animate-pulse-slow {
+  animation: murad-pulse-slow 12s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none !important;
+  }
+}
+
+/* ===================================================================
+   KEYFRAMES
+   @rationale Declared at top level, not inside a layer or utility. Keyframe
+              names are namespaced (murad-*) so a consuming project can define
+              its own `fadeInUp` or `marquee` without a silent collision.
+   =================================================================== */
+@keyframes murad-fade-in-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes murad-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes murad-pulse-slow {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.15) translate(20px, -10px);
   }
 }
