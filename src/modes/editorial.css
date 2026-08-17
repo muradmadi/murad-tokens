@@ -39,11 +39,39 @@
 }
 
 @layer base {
+  /**
+   * @group Text Rendering
+   * @rationale Grayscale smoothing thins the sans and serif pleasantly at reading
+   *            sizes, which is why it is set here rather than left at the default.
+   * @note `text-rendering: optimizeLegibility` is deliberately NOT set. It enables
+   *       kerning and ligatures that modern browsers already apply by default, and
+   *       in exchange it can shift glyphs off the pixel grid at small sizes —
+   *       visible as graininess in metadata text. No upside, real downside.
+   */
   html {
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
+  }
+
+  /**
+   * @group Monospace Rendering Exception
+   * @description Restores platform-default antialiasing for monospace text.
+   * @rationale The mono face carries small metadata — 9px to 12px, usually
+   *            uppercase with wide tracking. Grayscale smoothing disables subpixel
+   *            rendering, and an unhinted variable webfont at that size then lands
+   *            its stems between pixels, which reads as grain. Platform default
+   *            lets subpixel antialiasing do its job where it matters most.
+   * @constraint Scoped to mono only. The sans and serif keep grayscale smoothing —
+   *             they are set at sizes where it flatters rather than degrades.
+   */
+  .font-mono,
+  code,
+  kbd,
+  samp,
+  pre {
+    -webkit-font-smoothing: auto;
+    -moz-osx-font-smoothing: auto;
   }
 
   body {

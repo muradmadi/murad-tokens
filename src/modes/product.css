@@ -57,6 +57,26 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /**
+   * @group Monospace Rendering Exception
+   * @description Restores platform-default antialiasing for monospace text.
+   * @rationale Mono carries small metadata, table figures, and code. Grayscale
+   *            smoothing disables subpixel rendering, and an unhinted variable
+   *            webfont at 9–12px then lands its stems between pixels, which reads
+   *            as grain. Platform default lets subpixel antialiasing work where it
+   *            matters most. Doubly relevant in this mode, where dense tables put
+   *            more small mono on screen than an editorial layout ever does.
+   * @constraint Scoped to mono only — the sans keeps grayscale smoothing.
+   */
+  .font-mono,
+  code,
+  kbd,
+  samp,
+  pre {
+    -webkit-font-smoothing: auto;
+    -moz-osx-font-smoothing: auto;
+  }
+
   body {
     letter-spacing: 0;
     line-height: 1.5;
