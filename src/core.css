@@ -1,0 +1,174 @@
+/**
+ * @file core.css
+ * @description THE INVARIANT LAYER. Color primitives, radius system, shadow language,
+ *              and the semantic token contract that every consuming project shares.
+ *              This file defines the brand. Nothing in here is per-project tunable.
+ * @namespace Murad.Core
+ * @dependencies tailwindcss v4 (peer)
+ * @rationale Identity lives in hue, depth, and edge — not in type scale or density.
+ *            Two products can share this file and still feel appropriate to their
+ *            own context, because everything context-dependent lives in a mode file.
+ * @constraint Do not add font sizes, line heights, measure limits, or spacing scales
+ *             to this file. Those belong in src/modes/*.css. See DESIGN.md.
+ */
+
+/* ===================================================================
+   TOKEN CONTRACT
+   @group Tailwind Theme Registration
+   @description Registers semantic tokens with Tailwind so it generates
+                utilities (bg-canvas, text-ink, border-border, shadow-editorial…).
+   @rationale Each theme token points at a raw primitive defined in :root below.
+              This indirection — NOT self-reference — is what makes the tokens
+              runtime-themeable: swapping .dark rebinds the primitive and every
+              utility follows without regenerating CSS.
+   @warning Never write `--color-x: var(--color-x)`. That reads as circular, and
+            while it happens to resolve via cascade order it breaks silently on
+            Tailwind upgrades. Always point at a distinct primitive name.
+   =================================================================== */
+@theme {
+  /* Surfaces */
+  --color-canvas: var(--murad-canvas);
+  --color-surface: var(--murad-surface);
+
+  /* Typography colors — the "ink on paper" metaphor */
+  --color-ink: var(--murad-ink);
+  --color-ink-muted: var(--murad-ink-muted);
+
+  /* Brand */
+  --color-accent: var(--murad-accent);
+  --color-accent-hover: var(--murad-accent-hover);
+
+  /**
+   * @group Accessible Accent Text
+   * @description The accent at a lightness that clears WCAG AA (4.5:1) as TEXT.
+   * @rationale --color-accent is a FILL colour. Measured against canvas it lands at
+   *            3.58:1 — fine for large text, borders, and focus rings, but a failure
+   *            for body-size links. Rather than leave that trap open, this token
+   *            resolves to the darker coral in light mode and the standard coral in
+   *            dark mode, where the relationship inverts and 4.76:1 already passes.
+   * @usage Link text, inline emphasis, any accent-coloured text below 24px.
+   * @constraint Do NOT use --color-accent for body-size text. Use this instead.
+   */
+  --color-accent-text: var(--murad-accent-text);
+
+  /* Structure */
+  --color-border: var(--murad-border);
+  --color-overlay: var(--murad-overlay);
+
+  /* Feedback */
+  --color-success: var(--murad-success);
+  --color-error: var(--murad-error);
+
+  /* Depth */
+  --shadow-editorial: var(--murad-shadow-editorial);
+  --shadow-editorial-hover: var(--murad-shadow-editorial-hover);
+  --shadow-solid: var(--murad-shadow-solid);
+
+  /**
+   * @group Radius System
+   * @description Two radii, no middle ground.
+   * @rationale Sharp corners read as precise and editorial. Die-cut rounding is
+   *            reserved for meta-layers (callouts, modals) so it stays a deliberate
+   *            signal rather than ambient softness.
+   * @constraint Never introduce a value between 0 and 1.5rem. A 4px or 8px radius
+   *             is the single fastest way to make this system look generic.
+   */
+  --radius-sharp: 0px;
+  --radius-diecut: 1.5rem;
+  --radius: var(--radius-sharp);
+
+  /**
+   * @group Motion Constants
+   * @description Shared easing and duration so interactions feel identical
+   *              across every project using this package.
+   */
+  --ease-editorial: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-entrance: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --duration-interaction: 300ms;
+}
+
+@layer base {
+  /* ===================================================================
+     THEME: LIGHT — "Warm Paper"
+     @rationale 98.5% lightness at hue 86 mimics premium magazine stock. Pure
+                white (#ffffff) is clinical and harsh over long reading sessions;
+                the warmth is what makes the identity feel authored rather than
+                defaulted.
+     =================================================================== */
+  :root {
+    --murad-canvas: oklch(0.985 0.007 86); /* #fcfaf5 — warm cream paper */
+    --murad-surface: oklch(1 0 0); /* #ffffff — pure white for elevation */
+
+    --murad-ink: oklch(0.208 0.006 285); /* #17171b — soft charcoal · 17.06:1 on canvas */
+    --murad-ink-muted: oklch(0.55 0.02 260); /* #6b727e — cool grey · 4.65:1 on canvas */
+
+    --murad-accent: oklch(0.63 0.16 39); /* #d76037 — muted coral (BRAND) · fill only */
+    --murad-accent-hover: oklch(0.56 0.16 39); /* #bf4a1f — darker coral */
+    --murad-accent-text: oklch(0.56 0.16 39); /* 4.79:1 on canvas — AA for body text */
+
+    --murad-border: oklch(0 0 0 / 0.06);
+    --murad-overlay: oklch(1 0 0 / 0.9);
+
+    --murad-success: oklch(0.58 0.14 160); /* #059669 — emerald 600 */
+    --murad-error: oklch(0.54 0.22 29); /* #dc2626 — red 600 */
+
+    --murad-shadow-editorial: 0 4px 20px -2px oklch(0 0 0 / 0.05);
+    --murad-shadow-editorial-hover: 0 10px 30px -4px oklch(0 0 0 / 0.08);
+    --murad-shadow-solid: 4px 4px 0px 0px oklch(0 0 0);
+  }
+
+  /* ===================================================================
+     THEME: DARK — "Deep Charcoal"
+     @rationale Pure black causes eye strain from excessive contrast with text.
+                20.8% lightness holds comfort while clearing WCAG AA against ink.
+     @note Accent hue is IDENTICAL across themes (39). Only lightness moves.
+           That constancy is what makes the brand recognizable in both modes.
+     =================================================================== */
+  .dark {
+    --murad-canvas: oklch(0.208 0.006 285); /* #17171b — warmer charcoal */
+    --murad-surface: oklch(0.27 0.006 286); /* #2c2c2e — elevated */
+
+    --murad-ink: oklch(0.96 0.005 260); /* #f4f4f6 — off-white · 15.6:1 */
+    --murad-ink-muted: oklch(0.86 0.01 260); /* #d3d4d9 — grey · 11.64:1 */
+
+    --murad-accent: oklch(0.63 0.16 39); /* #d76037 — same coral, same hue */
+    --murad-accent-hover: oklch(0.75 0.14 65); /* #ea9941 — lifts on dark */
+    --murad-accent-text: oklch(0.63 0.16 39); /* 4.76:1 on dark canvas — AA already */
+
+    --murad-border: oklch(1 0 0 / 0.08);
+    --murad-overlay: oklch(0.208 0.006 285 / 0.85);
+
+    --murad-success: oklch(0.81 0.13 160); /* #34d399 — emerald 400 */
+    --murad-error: oklch(0.68 0.2 28); /* #ff6b6b — soft red */
+
+    --murad-shadow-editorial: 0 10px 30px -10px oklch(0 0 0 / 0.5);
+    --murad-shadow-editorial-hover: 0 15px 40px -10px oklch(0 0 0 / 0.6);
+    --murad-shadow-solid: 4px 4px 0px 0px oklch(1 0 0);
+  }
+
+  /* ===================================================================
+     GLOBAL GROUND
+     =================================================================== */
+  html {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-canvas);
+  }
+
+  /**
+   * @group Focus Visibility
+   * @description A single, shared focus ring for every project.
+   * @rationale Focus treatment is identity as much as it is accessibility. Keeping
+   *            it in core means no consuming project can quietly ship an
+   *            invisible focus state.
+   * @constraint Never set `outline: none` without an equivalent replacement.
+   */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}

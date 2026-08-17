@@ -1,0 +1,104 @@
+/**
+ * @file effects.css
+ * @description Surface treatments — glass, grain, masks, die-cut geometry.
+ *              Optional layer: import only if a project actually uses them.
+ * @namespace Murad.Effects
+ * @dependencies ./core.css (consumes --color-surface, --color-border, --radius-diecut)
+ * @rationale These are the "special moment" utilities. Their value depends on
+ *            scarcity — a die-cut corner means nothing if every card has one.
+ */
+
+@layer utilities {
+  /**
+   * @group Die-Cut Geometry
+   * @description Asymmetric rounding on the TL–BR diagonal.
+   * @rationale Breaks the rigid grid on one axis only, implying motion without
+   *            softening the whole system.
+   * @constraint Reserve for meta-layers: callout cards, feature highlights, modals.
+   *             Never on buttons, inputs, or images.
+   */
+  .rounded-asymmetric {
+    border-radius: var(--radius-diecut) 0 var(--radius-diecut) 0;
+  }
+
+  /**
+   * @group Glassmorphism
+   * @description Frosted surface for sticky headers and floating overlays.
+   * @rationale 60% surface opacity retains background context while keeping
+   *            overlaid text legible; backdrop blur supplies the refractive edge.
+   * @constraint Only worth its cost over visually active backgrounds. Over a flat
+   *             canvas it reads as a slightly wrong grey.
+   * @note Uses color-mix rather than nesting a token inside oklch(). The token is
+   *       already a complete oklch() function, so `oklch(var(--token) / 0.6)`
+   *       produces invalid CSS that fails silently to a transparent background.
+   */
+  .glass-effect {
+    background-color: color-mix(in srgb, var(--color-surface) 60%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--color-border);
+  }
+
+  /**
+   * @group Multi-line Truncation
+   * @usage Card excerpts and list previews where vertical rhythm must hold.
+   * @constraint Never truncate content that has no full view elsewhere.
+   */
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /**
+   * @group Horizontal Fade Mask
+   * @usage Marquees and carousels — dissolves the track at both edges so content
+   *        appears to pass behind the layout rather than being clipped by it.
+   */
+  .fade-mask {
+    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  }
+
+  /**
+   * @group Upward Fade Mask
+   * @description Dissolves an element toward its top edge via a smooth alpha ramp.
+   * @rationale Defined once here rather than duplicated as inline styles, which
+   *            also keeps it CSP-safe (no style-src 'unsafe-inline' required).
+   * @usage Cover images that need to melt into the canvas behind their caption.
+   */
+  .mask-fade-up {
+    --murad-fade-up: linear-gradient(
+      to top,
+      black 0%,
+      black 30%,
+      rgb(0 0 0 / 0.97) 37%,
+      rgb(0 0 0 / 0.9) 44%,
+      rgb(0 0 0 / 0.79) 51%,
+      rgb(0 0 0 / 0.65) 58%,
+      rgb(0 0 0 / 0.5) 65%,
+      rgb(0 0 0 / 0.34) 72%,
+      rgb(0 0 0 / 0.2) 79%,
+      rgb(0 0 0 / 0.09) 86%,
+      rgb(0 0 0 / 0.02) 93%,
+      transparent 100%
+    );
+
+    mask-image: var(--murad-fade-up);
+    -webkit-mask-image: var(--murad-fade-up);
+  }
+
+  /**
+   * @group Stochastic Grain
+   * @description Fractal-noise texture for dithering gradient meshes.
+   * @rationale Kept as a CSS rule rather than an inline style attribute so a
+   *            strict CSP cannot strip it.
+   * @usage Apply to a full-bleed absolutely-positioned layer above a gradient.
+   */
+  .noise-overlay {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+  }
+}

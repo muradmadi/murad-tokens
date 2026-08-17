@@ -1,0 +1,24 @@
+/**
+ * @file index.css
+ * @description Default entry point. Pulls in the invariant identity, the interaction
+ *              engine, and the effects layer — but deliberately NOT an expression mode.
+ * @namespace Murad
+ * @dependencies tailwindcss v4 (must be imported by the consumer FIRST)
+ *
+ * @usage In your project's stylesheet:
+ *
+ *   @import "tailwindcss";
+ *   @custom-variant dark (&:where(.dark, .dark *));
+ *   @import "@murad/tokens";
+ *   @import "@murad/tokens/product";     <-- REQUIRED: pick exactly one mode
+ *   @source "../node_modules/@murad/react/dist";
+ *
+ * @warning No mode is bundled here on purpose. Choosing between editorial and
+ *          product is a judgement about what the product IS, and a default would
+ *          get silently accepted rather than actually decided. If your headings
+ *          look unstyled, you skipped the mode import. See DESIGN.md.
+ */
+
+@import "./core.css";
+@import "./engine.css";
+@import "./effects.css";

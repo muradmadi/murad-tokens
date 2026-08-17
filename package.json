@@ -1,0 +1,39 @@
+{
+  "name": "@murad/tokens",
+  "version": "0.1.0",
+  "description": "Sharp editorial design identity — invariant brand tokens plus swappable expression modes. Framework-agnostic CSS for Tailwind v4.",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    ".": "./src/index.css",
+    "./core": "./src/core.css",
+    "./engine": "./src/engine.css",
+    "./effects": "./src/effects.css",
+    "./editorial": "./src/modes/editorial.css",
+    "./product": "./src/modes/product.css",
+    "./DESIGN.md": "./DESIGN.md",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "DESIGN.md",
+    ".claude"
+  ],
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource-variable/jetbrains-mono": "^5.2.8",
+    "@fontsource-variable/playfair-display": "^5.2.8"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^4.0.0"
+  },
+  "keywords": [
+    "design-system",
+    "design-tokens",
+    "tailwindcss",
+    "oklch"
+  ]
+}

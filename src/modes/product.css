@@ -1,0 +1,223 @@
+/**
+ * @file modes/product.css
+ * @description EXPRESSION MODE: product. Inter throughout, tighter leading, compact
+ *              density, tabular numerals, enforced touch targets.
+ * @namespace Murad.Mode.Product
+ * @dependencies ../core.css, @fontsource-variable/{inter,jetbrains-mono}
+ * @rationale This is a SCANNING aesthetic. Dense UI is read by jumping between
+ *            values, not by reading lines — so leading tightens, measure limits
+ *            disappear, and numerals align.
+ * @note Identity is carried by core.css (coral accent, ink/canvas, sharp radius,
+ *       shadow language), NOT by the typeface. A product app in this mode is still
+ *       recognisably the same system as the editorial site.
+ * @constraint Playfair Display is deliberately absent. Below ~24px its high stroke
+ *             contrast collapses into mush, and a data table is nothing but small
+ *             type. If you need a serif hero moment, see DESIGN.md "Escape hatches".
+ */
+
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+
+@theme {
+  /**
+   * @group Type System — two tiers
+   * @note --font-serif intentionally resolves to the sans stack. Any component
+   *       carried over from an editorial project degrades gracefully instead of
+   *       falling back to Times New Roman.
+   */
+  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
+  --font-serif: var(--font-sans);
+
+  /**
+   * @group Density & Ergonomics
+   * @rationale 44px is the WCAG 2.2 / iOS HIG minimum for a comfortable touch
+   *            target. Encoding it as a token means it survives refactors that a
+   *            code-review comment would not.
+   * @constraint --spacing-tap is a FLOOR, not a suggestion. Any interactive element
+   *             smaller than this needs an expanded hit area via padding or ::after.
+   */
+  --spacing-tap: 2.75rem; /* 44px */
+  --density-row: 2.25rem; /* 36px — table/list row height */
+  --density-gutter: 0.75rem; /* 12px — intra-component spacing */
+
+  /**
+   * @group Container Widths
+   * @rationale Product UI is bounded by viewport and panel geometry, not by
+   *            reading comfort. There is deliberately no 65ch measure here.
+   */
+  --container-panel: 28rem;
+  --container-content: 80rem;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    letter-spacing: 0;
+    line-height: 1.5;
+  }
+
+  /**
+   * @group Product Headings
+   * @rationale Inter has low stroke contrast, so hierarchy must come from weight
+   *            and size rather than from typeface change. 600 is the working
+   *            heading weight; negative tracking keeps large sizes from feeling airy.
+   * @constraint Do not exceed weight 700 — Inter's heaviest cuts smear at small sizes.
+   */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+
+  /**
+   * @group Numeric Alignment
+   * @description Tabular figures everywhere numbers are compared vertically.
+   * @rationale Proportional digits make columns of currency and counts ragged,
+   *            which defeats the entire purpose of a table.
+   */
+  table,
+  [data-numeric],
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /**
+   * @group Form Controls
+   * @rationale Browsers do not inherit font into form elements. Without this,
+   *            every input silently falls back to the system UI font and the
+   *            identity breaks in exactly the places users type.
+   */
+  input,
+  textarea,
+  select,
+  button {
+    font-family: inherit;
+    font-size: inherit;
+    letter-spacing: inherit;
+  }
+}
+
+@layer utilities {
+  /**
+   * @group Type Scale
+   * @description Explicit, compact scale for product surfaces.
+   * @rationale Named steps beat arbitrary sizes — they force a decision about what
+   *            a piece of text IS, not merely how big it should look.
+   */
+  .text-display {
+    font-family: var(--font-sans);
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+  }
+
+  .text-headline {
+    font-size: 1.5rem;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+  }
+
+  .text-subhead {
+    font-size: 1.125rem;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+
+  .text-body {
+    font-size: 0.9375rem; /* 15px — the product workhorse */
+    line-height: 1.5;
+  }
+
+  .text-caption {
+    font-size: 0.8125rem; /* 13px */
+    line-height: 1.4;
+    color: var(--color-ink-muted);
+  }
+
+  /**
+   * @group Metric Display
+   * @usage Dashboard stat tiles and KPI figures.
+   * @rationale Tabular numerals plus tight tracking so large numbers read as a
+   *            single value rather than as loose digits.
+   */
+  .text-metric {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /**
+   * @group Touch Target Floor
+   * @usage Icon buttons, chips, and any control whose visual size is under 44px.
+   * @constraint Prefer this over shipping a 32px hit area with a code comment
+   *             promising to fix it later.
+   */
+  .tap-target {
+    min-height: var(--spacing-tap);
+    min-width: var(--spacing-tap);
+  }
+
+  /**
+   * @group Expanded Hit Area
+   * @description Keeps a control visually small while meeting the 44px floor.
+   * @rationale The correct fix when design calls for a 24px icon but the finger
+   *            needs 44px. Requires position: relative on the element.
+   */
+  .tap-expand {
+    position: relative;
+  }
+
+  .tap-expand::after {
+    content: "";
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: var(--spacing-tap);
+    height: var(--spacing-tap);
+    transform: translate(-50%, -50%);
+  }
+
+  /**
+   * @group Layout Containers
+   */
+  .container-content {
+    max-width: var(--container-content);
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  .container-panel {
+    max-width: var(--container-panel);
+    width: 100%;
+  }
+
+  /**
+   * @group Dense Row
+   * @usage Table rows and list items in data-heavy views.
+   */
+  .row-dense {
+    min-height: var(--density-row);
+    padding-inline: var(--density-gutter);
+    display: flex;
+    align-items: center;
+  }
+}
